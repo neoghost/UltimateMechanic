@@ -8,5 +8,6 @@
         <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
         <converters:BytesToSizeConverter x:Key="BytesToSizeConverter"/>
         <converters:BytesToUnitConverter x:Key="BytesToUnitConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
     </Application.Resources>
 </Application>

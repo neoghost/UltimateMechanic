@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Linq;
 using UltimateMechanic.Models;
 using UltimateMechanic.Services;
 
@@ -35,6 +36,13 @@ namespace UltimateMechanic.ViewModels
             _cleanerService = cleanerService;
         }
 
+        // Call this to update counts when selections change
+        public void UpdateSelectedCount()
+        {
+            SelectedCount = CleanupGroups.Sum(g => g.Count(i => i.IsSelected));
+            TotalSizeBytes = CleanupGroups.Sum(g => g.Sum(i => i.SizeBytes));
+        }
+
         [RelayCommand]
         private async Task ScanAsync()
         {
@@ -60,7 +68,15 @@ namespace UltimateMechanic.ViewModels
                 {
                     var grp = new Models.CleanupGroup(GetGroupName(g.Key));
                     foreach (var item in g)
+                    {
                         grp.Add(item);
+                        item.PropertyChanged += CleanupItem_PropertyChanged;
+                    }
+
+                    // listen to group and future item changes
+                    grp.PropertyChanged += Group_PropertyChanged;
+                    grp.CollectionChanged += Group_CollectionChanged;
+
                     CleanupGroups.Add(grp);
                 }
 
@@ -117,7 +133,7 @@ namespace UltimateMechanic.ViewModels
             {
                 grp.IsSelected = true;
             }
-            SelectedCount = CleanupGroups.Sum(g => g.Count);
+            UpdateSelectedCount();
         }
 
         [RelayCommand]
@@ -127,7 +143,7 @@ namespace UltimateMechanic.ViewModels
             {
                 grp.IsSelected = false;
             }
-            SelectedCount = 0;
+            UpdateSelectedCount();
         }
 
         private string FormatBytes(long bytes)
@@ -161,6 +177,38 @@ namespace UltimateMechanic.ViewModels
                 CleanupCategory.ErrorReports => "Error Reports",
                 _ => category.ToString(),
             };
+        }
+
+
+        private void Group_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CleanupGroup.IsSelected))
+            {
+                UpdateSelectedCount();
+            }
+        }
+
+        private void Group_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (var it in e.NewItems.Cast<CleanupItem>())
+                    it.PropertyChanged += CleanupItem_PropertyChanged;
+            }
+            if (e.OldItems != null)
+            {
+                foreach (var it in e.OldItems.Cast<CleanupItem>())
+                    it.PropertyChanged -= CleanupItem_PropertyChanged;
+            }
+            UpdateSelectedCount();
+        }
+
+        private void CleanupItem_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CleanupItem.IsSelected))
+            {
+                UpdateSelectedCount();
+            }
         }
     }
 }

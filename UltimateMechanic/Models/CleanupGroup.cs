@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace UltimateMechanic.Models
 {
-    public class CleanupGroup : ObservableCollection<CleanupItem>
+    public partial class CleanupGroup : System.ComponentModel.INotifyPropertyChanged
     {
         public CleanupGroup(string name)
         {
@@ -25,8 +25,11 @@ namespace UltimateMechanic.Models
                 _isSelected = value;
                 foreach (var item in Items)
                     item.IsSelected = value;
+                PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(IsSelected)));
             }
         }
+
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
 
         public long TotalSize => Items.Sum(i => i.SizeBytes);
     }
