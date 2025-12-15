@@ -1,0 +1,97 @@
+<UserControl x:Class="UltimateMechanic.Views.StartupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="#1E1E1E">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Startup Manager" FontSize="28" FontWeight="Bold" Foreground="White"/>
+            <TextBlock Text="Manage programs and services that start with Windows" FontSize="14" Foreground="#AAAAAA" Margin="0,5,0,0"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+            <Button Content="Refresh List" Command="{Binding LoadStartupItemsCommand}" 
+                    Background="#0E639C" Foreground="White" FontSize="14" FontWeight="SemiBold"
+                    Padding="20,10" BorderThickness="0" Cursor="Hand">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+            </Button>
+            
+            <TextBlock Text="{Binding StartupItems.Count, StringFormat='{}{0} Apps Found'}" 
+                       Foreground="#808080" VerticalAlignment="Center" Margin="15,0,0,0" FontSize="14"/>
+        </StackPanel>
+
+        <Border Grid.Row="2" Background="#2D2D30" CornerRadius="8" Padding="15">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding StartupItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="#252526" CornerRadius="6" Padding="15" Margin="0,0,0,8">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" Foreground="White"/>
+                                        <TextBlock Text="{Binding Path}" FontSize="12" Foreground="#808080" 
+                                                   TextTrimming="CharacterEllipsis" Margin="0,3,0,0" ToolTip="{Binding Path}"/>
+                                        <TextBlock Text="{Binding Type}" FontSize="11" Foreground="#4EC9B0" Margin="0,3,0,0"/>
+                                    </StackPanel>
+
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" Margin="0,0,20,0" FontWeight="Bold">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsEnabled}" Value="True">
+                                                        <Setter Property="Text" Value="Enabled"/>
+                                                        <Setter Property="Foreground" Value="#4EC9B0"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                                                        <Setter Property="Text" Value="Disabled"/>
+                                                        <Setter Property="Foreground" Value="#808080"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
+                                    <CheckBox Grid.Column="2" IsChecked="{Binding IsEnabled}" 
+                                              Command="{Binding DataContext.ToggleItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              CommandParameter="{Binding}"
+                                              VerticalAlignment="Center" Cursor="Hand">
+                                        <CheckBox.LayoutTransform>
+                                            <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+                                        </CheckBox.LayoutTransform>
+                                    </CheckBox>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>
