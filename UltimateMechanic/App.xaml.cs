@@ -22,13 +22,13 @@ namespace UltimateMechanic
             // Services
             services.AddSingleton<ISystemInfoService, SystemInfoService>();
             services.AddSingleton<ICleanerService, CleanerService>();
-            services.AddSingleton<IStartupService, StartupService>(); // Added
+            services.AddSingleton<IStartupService, StartupService>();
 
             // ViewModels
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<DashboardViewModel>();
             services.AddSingleton<CleanerViewModel>();
-            services.AddSingleton<StartupViewModel>(); // Added
+            services.AddSingleton<StartupViewModel>();
 
             // Views
             services.AddSingleton<MainWindow>();
@@ -39,6 +39,10 @@ namespace UltimateMechanic
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
             var mainWindow = Services.GetRequiredService<MainWindow>();
+            
+            // CRITICAL FIX: Tell WPF that this is the Main Window
+            Current.MainWindow = mainWindow;
+            
             mainWindow.Show();
         }
     }
