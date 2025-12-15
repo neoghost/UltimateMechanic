@@ -1,0 +1,120 @@
+<UserControl x:Class="UltimateMechanic.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="#1E1E1E">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="System Dashboard" FontSize="28" FontWeight="Bold" Foreground="White"/>
+            <TextBlock Text="Monitor your system's health and performance" FontSize="14" Foreground="#AAAAAA" Margin="0,5,0,0"/>
+        </StackPanel>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- CPU Info -->
+                <Border Background="#2D2D30" CornerRadius="8" Padding="20" Margin="0,0,0,15">
+                    <StackPanel>
+                        <TextBlock Text="CPU" FontSize="18" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,10"/>
+                        <TextBlock Text="{Binding CpuName}" FontSize="14" Foreground="#CCCCCC" Margin="0,0,0,10"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Usage: " FontSize="14" Foreground="#AAAAAA"/>
+                            <TextBlock Text="{Binding CpuUsage, StringFormat={}{0:F1}%}" FontSize="14" FontWeight="Bold" Foreground="#4EC9B0"/>
+                        </StackPanel>
+                        <ProgressBar Value="{Binding CpuUsage}" Maximum="100" Height="8" Margin="0,10,0,0" 
+                                     Foreground="#4EC9B0" Background="#3E3E42"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Memory Info -->
+                <Border Background="#2D2D30" CornerRadius="8" Padding="20" Margin="0,0,0,15">
+                    <StackPanel>
+                        <TextBlock Text="Memory" FontSize="18" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,10"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <TextBlock Text="Used: " FontSize="14" Foreground="#AAAAAA"/>
+                            <TextBlock FontSize="14" FontWeight="Bold" Foreground="#569CD6">
+                                <Run Text="{Binding UsedMemoryMB, Mode=OneWay}"/>
+                                <Run Text=" MB / "/>
+                                <Run Text="{Binding TotalMemoryMB, Mode=OneWay}"/>
+                                <Run Text=" MB"/>
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Usage: " FontSize="14" Foreground="#AAAAAA"/>
+                            <TextBlock Text="{Binding MemoryUsagePercent, StringFormat={}{0:F1}%}" FontSize="14" FontWeight="Bold" Foreground="#569CD6"/>
+                        </StackPanel>
+                        <ProgressBar Value="{Binding MemoryUsagePercent}" Maximum="100" Height="8" Margin="0,10,0,0" 
+                                     Foreground="#569CD6" Background="#3E3E42"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Drives Info -->
+                <Border Background="#2D2D30" CornerRadius="8" Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="Storage" FontSize="18" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,15"/>
+                        <ItemsControl ItemsSource="{Binding Drives}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#252526" CornerRadius="6" Padding="15" Margin="0,0,0,10">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,8"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                                <TextBlock Text="Used: " FontSize="13" Foreground="#AAAAAA"/>
+                                                <TextBlock FontSize="13" Foreground="#CCCCCC">
+                                                    <Run Text="{Binding UsedSpaceGB, Mode=OneWay}"/>
+                                                    <Run Text=" GB / "/>
+                                                    <Run Text="{Binding TotalSpaceGB, Mode=OneWay}"/>
+                                                    <Run Text=" GB"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                                <TextBlock Text="Free: " FontSize="13" Foreground="#AAAAAA"/>
+                                                <TextBlock Text="{Binding FreeSpaceGB, StringFormat={}{0} GB}" FontSize="13" Foreground="#CCCCCC"/>
+                                            </StackPanel>
+                                            <ProgressBar Value="{Binding UsagePercent}" Maximum="100" Height="6" 
+                                                         Foreground="#CE9178" Background="#3E3E42"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <!-- Refresh Button -->
+                <Button Content="Refresh" Command="{Binding RefreshCommand}" 
+                        Background="#0E639C" Foreground="White" FontSize="14" FontWeight="SemiBold"
+                        Padding="20,10" Margin="0,20,0,0" BorderThickness="0" Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="#0E639C"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#1177BB"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
