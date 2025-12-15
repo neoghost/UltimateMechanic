@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Reflection;
 
 namespace UltimateMechanic.ViewModels
 {
@@ -14,6 +15,9 @@ namespace UltimateMechanic.ViewModels
         [ObservableProperty]
         private string _currentPage = "Dashboard";
 
+        // Expose the real version to the UI
+        public string AppVersion { get; } = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "1.0.0";
+
         public DashboardViewModel DashboardViewModel { get; }
         public CleanerViewModel CleanerViewModel { get; }
         public StartupViewModel StartupViewModel { get; }
@@ -27,7 +31,6 @@ namespace UltimateMechanic.ViewModels
             CleanerViewModel = cleanerViewModel;
             StartupViewModel = startupViewModel;
             
-            // Set initial view
             CurrentView = DashboardViewModel;
         }
 
@@ -51,7 +54,6 @@ namespace UltimateMechanic.ViewModels
         {
             CurrentView = StartupViewModel;
             CurrentPage = "Startup";
-            // Auto-load items when navigating to the page
             _ = StartupViewModel.LoadStartupItemsCommand.ExecuteAsync(null);
         }
     }

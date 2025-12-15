@@ -52,6 +52,7 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
                                     <StackPanel Grid.Column="0">
@@ -81,11 +82,38 @@
                                     <CheckBox Grid.Column="2" IsChecked="{Binding IsEnabled}" 
                                               Command="{Binding DataContext.ToggleItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                               CommandParameter="{Binding}"
-                                              VerticalAlignment="Center" Cursor="Hand">
+                                              VerticalAlignment="Center" Cursor="Hand" Margin="0,0,10,0">
                                         <CheckBox.LayoutTransform>
                                             <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
                                         </CheckBox.LayoutTransform>
                                     </CheckBox>
+
+                                    <Button Grid.Column="3" 
+                                            Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Background="Transparent" BorderThickness="0" Cursor="Hand"
+                                            VerticalAlignment="Center" Padding="5">
+                                        <TextBlock Text="🗑" FontSize="18" Foreground="#FF5555" ToolTip="Delete Entry Permanently"/>
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                                                <ContentPresenter/>
+                                                            </Border>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="#3E3E42"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+
                                 </Grid>
                             </Border>
                         </DataTemplate>

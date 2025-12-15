@@ -139,7 +139,7 @@
 
                 <Border VerticalAlignment="Bottom" Padding="20" Margin="0,20,0,0">
                     <StackPanel>
-                        <TextBlock Text="Version 1.1.0" FontSize="11" Foreground="#606060"/>
+                        <TextBlock Text="{Binding AppVersion, StringFormat='Version {0}'}" FontSize="11" Foreground="#606060"/>
                         <TextBlock Text="© 2025 Ultimate Mechanic" FontSize="10" Foreground="#505050" Margin="0,3,0,0"/>
                     </StackPanel>
                 </Border>
@@ -151,3 +151,4 @@
         </Border>
     </Grid>
 </Window>
+

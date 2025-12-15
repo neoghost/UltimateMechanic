@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using UltimateMechanic.Models;
 using UltimateMechanic.Services;
+using System.Windows;
 
 namespace UltimateMechanic.ViewModels;
 
@@ -44,7 +45,23 @@ public partial class StartupViewModel : ObservableObject
     [RelayCommand]
     private async Task ToggleItemAsync(StartupItem item)
     {
-        // Toggle the logic based on the new boolean state
+        // Simply calls the service to toggle state
         await _startupService.ToggleStartupAppAsync(item, item.IsEnabled);
+    }
+
+    [RelayCommand]
+    private async Task DeleteItemAsync(StartupItem item)
+    {
+        // Ask for confirmation before deleting permanently
+        var result = MessageBox.Show($"Are you sure you want to delete '{item.Name}' from startup?", 
+                                     "Confirm Delete", 
+                                     MessageBoxButton.YesNo, 
+                                     MessageBoxImage.Warning);
+
+        if (result == MessageBoxResult.Yes)
+        {
+            await _startupService.DeleteStartupAppAsync(item);
+            StartupItems.Remove(item);
+        }
     }
 }

@@ -1,5 +1,4 @@
 using Microsoft.Win32;
-using System.Diagnostics;
 using System.IO;
 using UltimateMechanic.Models;
 
@@ -33,10 +32,7 @@ public class StartupService : IStartupService
                 }
             }
 
-            // 2. Scan Disabled Startup Items (Simple check in specialized registry keys is complex, 
-            // generally strictly managing Enabled items is safer for non-admin apps)
-            
-            // 3. Scan Common Startup Folder
+            // 2. Scan Startup Folder
             var startupPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             if (Directory.Exists(startupPath))
             {
@@ -69,10 +65,37 @@ public class StartupService : IStartupService
                 }
                 else
                 {
+                    // For registry items, disabling usually means deleting the value.
+                    // To keep it "disabled" but visible would require a separate storage mechanism 
+                    // or moving it to a "disabled" registry key. 
+                    // For this simple implementation, disabling removes it from Run.
                     key?.DeleteValue(item.Name, false);
                 }
             }
-            // Note: Folder startup items require moving files to a "Disabled" folder, skipped for safety here.
+        });
+    }
+
+    public async Task DeleteStartupAppAsync(StartupItem item)
+    {
+        await Task.Run(() =>
+        {
+            try 
+            {
+                if (item.Type.Contains("Registry"))
+                {
+                    using var key = Registry.CurrentUser.OpenSubKey(RunPath, true);
+                    // The 'false' parameter means "don't throw error if missing"
+                    key?.DeleteValue(item.Name, false);
+                }
+                else if (item.Type.Contains("Folder") && File.Exists(item.Path))
+                {
+                    File.Delete(item.Path);
+                }
+            }
+            catch 
+            {
+                // Handle permission errors or locks gracefully
+            }
         });
     }
 }

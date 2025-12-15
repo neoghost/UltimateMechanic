@@ -6,7 +6,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    </PropertyGroup>
+    
+    <Version>1.1.$([System.DateTime]::Now.ToString("yyMM")).$([System.DateTime]::Now.ToString("ddHH"))</Version>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
