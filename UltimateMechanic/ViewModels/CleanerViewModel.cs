@@ -11,7 +11,7 @@ namespace UltimateMechanic.ViewModels
         private readonly ICleanerService _cleanerService;
 
         [ObservableProperty]
-        private ObservableCollection<CleanupItem> _cleanupItems = new();
+        private ObservableCollection<CleanupGroup> _cleanupGroups = new();
 
         [ObservableProperty]
         private bool _isScanning;
@@ -39,7 +39,7 @@ namespace UltimateMechanic.ViewModels
         private async Task ScanAsync()
         {
             IsScanning = true;
-            CleanupItems.Clear();
+            CleanupGroups.Clear();
             TotalSizeBytes = 0;
 
             try
@@ -47,9 +47,21 @@ namespace UltimateMechanic.ViewModels
                 var progress = new Progress<string>(msg => StatusMessage = msg);
                 var items = await _cleanerService.ScanForCleanupItemsAsync(progress);
 
-                foreach (var item in items)
+                // Group items by category
+                var groups = items.GroupBy(i => i.Category)
+                    .Select(g => new Models.CleanupGroup(GetGroupName(g.Key))
+                    {
+                        // initialize items
+                    })
+                    .ToList();
+
+                // Populate groups and their items
+                foreach (var g in items.GroupBy(i => i.Category))
                 {
-                    CleanupItems.Add(item);
+                    var grp = new Models.CleanupGroup(GetGroupName(g.Key));
+                    foreach (var item in g)
+                        grp.Add(item);
+                    CleanupGroups.Add(grp);
                 }
 
                 TotalSizeBytes = items.Sum(i => i.SizeBytes);
@@ -69,7 +81,7 @@ namespace UltimateMechanic.ViewModels
         [RelayCommand]
         private async Task CleanAsync()
         {
-            if (!CleanupItems.Any(i => i.IsSelected))
+            if (!CleanupGroups.Any(g => g.Any(i => i.IsSelected)))
             {
                 StatusMessage = "No items selected for cleanup";
                 return;
@@ -80,7 +92,7 @@ namespace UltimateMechanic.ViewModels
             try
             {
                 var progress = new Progress<string>(msg => StatusMessage = msg);
-                var selectedItems = CleanupItems.Where(i => i.IsSelected).ToList();
+                var selectedItems = CleanupGroups.SelectMany(g => g.Where(i => i.IsSelected)).ToList();
                 var cleaned = await _cleanerService.CleanupItemsAsync(selectedItems, progress);
 
                 StatusMessage = $"Cleaned {FormatBytes(cleaned)}";
@@ -101,19 +113,19 @@ namespace UltimateMechanic.ViewModels
         [RelayCommand]
         private void SelectAll()
         {
-            foreach (var item in CleanupItems)
+            foreach (var grp in CleanupGroups)
             {
-                item.IsSelected = true;
+                grp.IsSelected = true;
             }
-            SelectedCount = CleanupItems.Count;
+            SelectedCount = CleanupGroups.Sum(g => g.Count);
         }
 
         [RelayCommand]
         private void DeselectAll()
         {
-            foreach (var item in CleanupItems)
+            foreach (var grp in CleanupGroups)
             {
-                item.IsSelected = false;
+                grp.IsSelected = false;
             }
             SelectedCount = 0;
         }
@@ -134,6 +146,21 @@ namespace UltimateMechanic.ViewModels
         partial void OnTotalSizeBytesChanged(long value)
         {
             OnPropertyChanged(nameof(TotalSizeFormatted));
+        }
+
+        private string GetGroupName(CleanupCategory category)
+        {
+            return category switch
+            {
+                CleanupCategory.TemporaryFiles => "Temporary Files",
+                CleanupCategory.BrowserCache => "Browser Cache",
+                CleanupCategory.RecycleBin => "Recycle Bin",
+                CleanupCategory.WindowsLogs => "Windows Logs",
+                CleanupCategory.ThumbnailCache => "Thumbnail Cache",
+                CleanupCategory.MemoryDumps => "Memory Dumps",
+                CleanupCategory.ErrorReports => "Error Reports",
+                _ => category.ToString(),
+            };
         }
     }
 }

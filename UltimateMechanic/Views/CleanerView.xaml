@@ -134,41 +134,64 @@
                 <TextBlock Text="Click 'Scan for Junk' to find files that can be cleaned" 
                            FontSize="16" Foreground="#808080" 
                            HorizontalAlignment="Center" VerticalAlignment="Center"
-                           Visibility="{Binding CleanupItems.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
+                           Visibility="{Binding CleanupGroups.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
 
-                <!-- Items List -->
+                <!-- Grouped Items List -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding CleanupItems}">
+                    <ItemsControl ItemsSource="{Binding CleanupGroups}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Background="#252526" CornerRadius="6" Padding="12" Margin="0,0,0,8">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,0,12">
+                                    <Border Background="#2A2A2D" CornerRadius="6" Padding="10" Margin="0,0,0,8">
+                                        <DockPanel>
+                                            <CheckBox IsChecked="{Binding IsSelected}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock DockPanel.Dock="Right" FontSize="13" FontWeight="SemiBold" Foreground="#4EC9B0" VerticalAlignment="Center">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0:0.##} {1}">
+                                                        <Binding Path="TotalSize" Converter="{StaticResource BytesToSizeConverter}"/>
+                                                        <Binding Path="TotalSize" Converter="{StaticResource BytesToUnitConverter}"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </DockPanel>
+                                    </Border>
 
-                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" 
-                                                  VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                    <ItemsControl ItemsSource="{Binding Items}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="#252526" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
 
-                                        <StackPanel Grid.Column="1">
-                                            <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" Foreground="White"/>
-                                            <TextBlock Text="{Binding Description}" FontSize="12" Foreground="#AAAAAA" 
-                                                       TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
-                                        </StackPanel>
+                                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsSelected}" 
+                                                                  VerticalAlignment="Center" Margin="0,0,12,0"/>
 
-                                        <TextBlock Grid.Column="2" FontSize="13" FontWeight="SemiBold" 
-                                                   Foreground="#4EC9B0" VerticalAlignment="Center" Margin="12,0,0,0">
-                                            <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}{0:0.##} {1}">
-                                                    <Binding Path="SizeBytes" Converter="{StaticResource BytesToSizeConverter}"/>
-                                                    <Binding Path="SizeBytes" Converter="{StaticResource BytesToUnitConverter}"/>
-                                                </MultiBinding>
-                                            </TextBlock.Text>
-                                        </TextBlock>
-                                    </Grid>
-                                </Border>
+                                                        <StackPanel Grid.Column="1">
+                                                            <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold" Foreground="White"/>
+                                                            <TextBlock Text="{Binding Description}" FontSize="12" Foreground="#AAAAAA" 
+                                                                       TextTrimming="CharacterEllipsis" Margin="0,3,0,0"/>
+                                                        </StackPanel>
+
+                                                        <TextBlock Grid.Column="2" FontSize="13" FontWeight="SemiBold" 
+                                                                   Foreground="#4EC9B0" VerticalAlignment="Center" Margin="12,0,0,0">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding StringFormat="{}{0:0.##} {1}">
+                                                                    <Binding Path="SizeBytes" Converter="{StaticResource BytesToSizeConverter}"/>
+                                                                    <Binding Path="SizeBytes" Converter="{StaticResource BytesToUnitConverter}"/>
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

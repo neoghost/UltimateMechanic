@@ -9,6 +9,8 @@ namespace UltimateMechanic.ViewModels
     public partial class DashboardViewModel : ObservableObject
     {
         private readonly ISystemInfoService _systemInfoService;
+        private readonly System.Windows.Threading.DispatcherTimer _refreshTimer;
+        private bool _isAutoRefreshing;
 
         [ObservableProperty]
         private string _cpuName = "Loading...";
@@ -34,6 +36,18 @@ namespace UltimateMechanic.ViewModels
         public DashboardViewModel(ISystemInfoService systemInfoService)
         {
             _systemInfoService = systemInfoService;
+            _refreshTimer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(5)
+            };
+            _refreshTimer.Tick += async (s, e) =>
+            {
+                if (_isAutoRefreshing) return;
+                _isAutoRefreshing = true;
+                try { await LoadSystemInfoAsync(); }
+                finally { _isAutoRefreshing = false; }
+            };
+            _refreshTimer.Start();
         }
 
         [RelayCommand]
