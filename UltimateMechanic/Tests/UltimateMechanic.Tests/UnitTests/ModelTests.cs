@@ -7,37 +7,37 @@ namespace UltimateMechanic.Tests.UnitTests
     public class ModelTests
     {
         [TestMethod]
-        public void SystemInfo_Defaults_AreExpected()
+        public void CleanupItem_Properties_WorkCorrectly()
         {
-            var info = new SystemInfo();
+            // Arrange
+            var item = new CleanupItem
+            {
+                Name = "Test Item",
+                SizeBytes = 1024 * 1024 * 5 // 5 MB
+            };
 
-            Assert.IsNotNull(info);
-            Assert.AreEqual(string.Empty, info.CpuName);
-            Assert.AreEqual(0, info.CpuUsage);
-            Assert.AreEqual(0, info.TotalMemoryMB);
-            Assert.AreEqual(0, info.UsedMemoryMB);
-            Assert.AreEqual(0, info.MemoryUsagePercent);
-            Assert.IsNotNull(info.Drives);
-            Assert.AreEqual(0, info.Drives.Count);
+            // Act & Assert
+            Assert.AreEqual("5.00 MB", item.DisplaySize);
+            Assert.AreEqual("Test Item", item.Name);
         }
 
         [TestMethod]
-        public void DriveInfo_ManualValues_CalculationExample()
+        public void CleanupGroup_IsSelected_TriggersNotification()
         {
-            var drive = new DriveInfo
+            // Arrange
+            var group = new CleanupGroup("Test Group");
+            bool eventFired = false;
+            group.PropertyChanged += (s, e) => 
             {
-                Name = "C:\\",
-                TotalSpaceGB = 100,
-                FreeSpaceGB = 40,
-                UsedSpaceGB = 60,
-                UsagePercent = 60.0
+                if (e.PropertyName == "IsSelected") eventFired = true;
             };
 
-            Assert.AreEqual("C:\\", drive.Name);
-            Assert.AreEqual(100, drive.TotalSpaceGB);
-            Assert.AreEqual(40, drive.FreeSpaceGB);
-            Assert.AreEqual(60, drive.UsedSpaceGB);
-            Assert.AreEqual(60.0, drive.UsagePercent);
+            // Act
+            group.IsSelected = true;
+
+            // Assert
+            Assert.IsTrue(eventFired);
+            Assert.IsTrue(group.IsSelected);
         }
     }
 }
