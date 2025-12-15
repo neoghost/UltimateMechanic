@@ -7,42 +7,64 @@ using UltimateMechanic.Services;
 
 namespace UltimateMechanic.ViewModels
 {
+    /// <summary>
+    /// View model for the disk cleanup functionality.
+    /// Manages scanning for cleanup items, selecting items for cleanup, and performing the cleanup operation.
+    /// </summary>
     public partial class CleanerViewModel : ObservableObject
     {
         private readonly ICleanerService _cleanerService;
 
+        /// <summary>Gets or sets the collection of cleanup item groups organized by category.</summary>
         [ObservableProperty]
         private ObservableCollection<CleanupGroup> _cleanupGroups = new();
 
+        /// <summary>Gets or sets a value indicating whether a scan operation is in progress.</summary>
         [ObservableProperty]
         private bool _isScanning;
 
+        /// <summary>Gets or sets a value indicating whether a cleanup operation is in progress.</summary>
         [ObservableProperty]
         private bool _isCleaning;
 
+        /// <summary>Gets or sets the status message for the current operation.</summary>
         [ObservableProperty]
         private string _statusMessage = "Ready to scan";
 
+        /// <summary>Gets or sets the total size of all cleanup items in bytes.</summary>
         [ObservableProperty]
         private long _totalSizeBytes;
 
+        /// <summary>Gets or sets the number of selected cleanup items.</summary>
         [ObservableProperty]
         private int _selectedCount;
 
+        /// <summary>Gets the total size of all cleanup items formatted as a human-readable string.</summary>
         public string TotalSizeFormatted => FormatBytes(TotalSizeBytes);
 
+        /// <summary>
+        /// Initializes a new instance of the CleanerViewModel class.
+        /// </summary>
+        /// <param name="cleanerService">The cleaner service for performing scan and cleanup operations.</param>
         public CleanerViewModel(ICleanerService cleanerService)
         {
             _cleanerService = cleanerService;
         }
 
-        // Call this to update counts when selections change
+        /// <summary>
+        /// Updates the selected item count and total size based on current selections.
+        /// Should be called whenever item selections change.
+        /// </summary>
         public void UpdateSelectedCount()
         {
             SelectedCount = CleanupGroups.Sum(g => g.Count(i => i.IsSelected));
             TotalSizeBytes = CleanupGroups.Sum(g => g.Sum(i => i.SizeBytes));
         }
 
+        /// <summary>
+        /// Scans the system for cleanup items asynchronously.
+        /// Groups found items by category and updates the UI with results.
+        /// </summary>
         [RelayCommand]
         private async Task ScanAsync()
         {
@@ -94,6 +116,10 @@ namespace UltimateMechanic.ViewModels
             }
         }
 
+        /// <summary>
+        /// Performs cleanup on all selected items asynchronously.
+        /// Removes selected files and directories, then rescans to update the list.
+        /// </summary>
         [RelayCommand]
         private async Task CleanAsync()
         {
@@ -126,6 +152,9 @@ namespace UltimateMechanic.ViewModels
             }
         }
 
+        /// <summary>
+        /// Selects all cleanup items for cleaning.
+        /// </summary>
         [RelayCommand]
         private void SelectAll()
         {
@@ -136,6 +165,9 @@ namespace UltimateMechanic.ViewModels
             UpdateSelectedCount();
         }
 
+        /// <summary>
+        /// Deselects all cleanup items.
+        /// </summary>
         [RelayCommand]
         private void DeselectAll()
         {
@@ -146,6 +178,11 @@ namespace UltimateMechanic.ViewModels
             UpdateSelectedCount();
         }
 
+        /// <summary>
+        /// Formats a byte value into a human-readable size string.
+        /// </summary>
+        /// <param name="bytes">The size in bytes.</param>
+        /// <returns>A formatted string like "1.50 MB" or "2.5 GB".</returns>
         private string FormatBytes(long bytes)
         {
             string[] sizes = { "B", "KB", "MB", "GB", "TB" };
@@ -159,11 +196,20 @@ namespace UltimateMechanic.ViewModels
             return $"{len:0.##} {sizes[order]}";
         }
 
+        /// <summary>
+        /// Handles the TotalSizeBytes changed event to update the formatted size display.
+        /// </summary>
+        /// <param name="value">The new total size in bytes.</param>
         partial void OnTotalSizeBytesChanged(long value)
         {
             OnPropertyChanged(nameof(TotalSizeFormatted));
         }
 
+        /// <summary>
+        /// Gets the display name for a cleanup category.
+        /// </summary>
+        /// <param name="category">The cleanup category.</param>
+        /// <returns>A user-friendly display name for the category.</returns>
         private string GetGroupName(CleanupCategory category)
         {
             return category switch
@@ -180,6 +226,12 @@ namespace UltimateMechanic.ViewModels
         }
 
 
+        /// <summary>
+        /// Handles property changed events from cleanup groups.
+        /// Updates the selected count when a group's selection state changes.
+        /// </summary>
+        /// <param name="sender">The group that changed.</param>
+        /// <param name="e">The property change event arguments.</param>
         private void Group_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(CleanupGroup.IsSelected))
@@ -188,6 +240,12 @@ namespace UltimateMechanic.ViewModels
             }
         }
 
+        /// <summary>
+        /// Handles collection changed events from cleanup groups.
+        /// Subscribes to property changes on new items and unsubscribes from removed items.
+        /// </summary>
+        /// <param name="sender">The group collection that changed.</param>
+        /// <param name="e">The collection change event arguments.</param>
         private void Group_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
@@ -203,6 +261,12 @@ namespace UltimateMechanic.ViewModels
             UpdateSelectedCount();
         }
 
+        /// <summary>
+        /// Handles property changed events from individual cleanup items.
+        /// Updates the selected count when an item's selection state changes.
+        /// </summary>
+        /// <param name="sender">The cleanup item that changed.</param>
+        /// <param name="e">The property change event arguments.</param>
         private void CleanupItem_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(CleanupItem.IsSelected))

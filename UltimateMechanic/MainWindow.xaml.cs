@@ -13,12 +13,17 @@ using UltimateMechanic.ViewModels;
 namespace UltimateMechanic;
 
 /// <summary>
-/// Interaction logic for MainWindow.xaml
+/// Main window for the Ultimate Mechanic application.
+/// Serves as the container for the dashboard and cleaner views.
 /// </summary>
 public partial class MainWindow : Window
 {
     private readonly MainViewModel _viewModel;
 
+    /// <summary>
+    /// Initializes a new instance of the MainWindow class.
+    /// </summary>
+    /// <param name="viewModel">The main view model for managing navigation and state.</param>
     public MainWindow(MainViewModel viewModel)
     {
         InitializeComponent();
@@ -27,6 +32,11 @@ public partial class MainWindow : Window
         Loaded += MainWindow_Loaded;
     }
 
+    /// <summary>
+    /// Handles the window loaded event and loads initial system information on startup.
+    /// </summary>
+    /// <param name="sender">The event sender.</param>
+    /// <param name="e">The routed event arguments.</param>
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
         // Load dashboard on startup

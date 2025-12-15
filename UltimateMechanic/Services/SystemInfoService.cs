@@ -5,10 +5,18 @@ using UltimateMechanic.Models;
 
 namespace UltimateMechanic.Services
 {
+    /// <summary>
+    /// Service for retrieving real-time system information including CPU, memory, and disk usage.
+    /// Uses Windows WMI and performance counters for accurate data collection.
+    /// </summary>
     public class SystemInfoService : ISystemInfoService
     {
         private PerformanceCounter? _cpuCounter;
 
+        /// <summary>
+        /// Initializes a new instance of the SystemInfoService class.
+        /// Sets up performance counters for CPU monitoring.
+        /// </summary>
         public SystemInfoService()
         {
             try
@@ -22,6 +30,10 @@ namespace UltimateMechanic.Services
             }
         }
 
+        /// <summary>
+        /// Gets comprehensive system information asynchronously.
+        /// </summary>
+        /// <returns>A SystemInfo object containing CPU, memory, and drive information.</returns>
         public async Task<SystemInfo> GetSystemInfoAsync()
         {
             var info = new SystemInfo
@@ -39,6 +51,10 @@ namespace UltimateMechanic.Services
             return info;
         }
 
+        /// <summary>
+        /// Gets the current CPU usage percentage asynchronously.
+        /// </summary>
+        /// <returns>The CPU usage as a percentage.</returns>
         public async Task<double> GetCpuUsageAsync()
         {
             if (_cpuCounter == null)
@@ -48,6 +64,10 @@ namespace UltimateMechanic.Services
             return Math.Round(_cpuCounter.NextValue(), 1);
         }
 
+        /// <summary>
+        /// Gets the total and used physical memory asynchronously.
+        /// </summary>
+        /// <returns>A tuple containing total and used memory in megabytes.</returns>
         public Task<(long total, long used)> GetMemoryInfoAsync()
         {
             var totalMemory = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / (1024 * 1024);
@@ -73,6 +93,10 @@ namespace UltimateMechanic.Services
             return Task.FromResult((totalMemory, usedMemory));
         }
 
+        /// <summary>
+        /// Gets the processor name using WMI.
+        /// </summary>
+        /// <returns>The processor name or "Unknown CPU" if retrieval fails.</returns>
         private string GetCpuName()
         {
             try
@@ -91,6 +115,10 @@ namespace UltimateMechanic.Services
             return "Unknown CPU";
         }
 
+        /// <summary>
+        /// Gets information about all fixed disk drives on the system.
+        /// </summary>
+        /// <returns>A list of DriveInfo objects for fixed drives.</returns>
         private List<Models.DriveInfo> GetDriveInfo()
         {
             var drives = new List<Models.DriveInfo>();

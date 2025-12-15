@@ -3,8 +3,18 @@ using UltimateMechanic.Models;
 
 namespace UltimateMechanic.Services
 {
+    /// <summary>
+    /// Service for scanning and cleaning unwanted files from the system.
+    /// Identifies cleanup items in various system directories including temp files, cache, and logs.
+    /// </summary>
     public class CleanerService : ICleanerService
     {
+        /// <summary>
+        /// Scans the system for cleanup items asynchronously.
+        /// Searches Windows temp, user temp, prefetch, recycle bin, browser caches, and other cleanup targets.
+        /// </summary>
+        /// <param name="progress">Optional progress reporter for scan operations.</param>
+        /// <returns>A list of CleanupItem objects found on the system.</returns>
         public async Task<List<CleanupItem>> ScanForCleanupItemsAsync(IProgress<string>? progress = null)
         {
             var items = new List<CleanupItem>();
@@ -55,6 +65,13 @@ namespace UltimateMechanic.Services
             return items;
         }
 
+        /// <summary>
+        /// Cleans up selected items from the system asynchronously.
+        /// Deletes files and directories marked for cleanup, reporting progress as items are removed.
+        /// </summary>
+        /// <param name="items">The list of cleanup items to process. Only items with IsSelected=true are cleaned.</param>
+        /// <param name="progress">Optional progress reporter for cleanup operations.</param>
+        /// <returns>The total number of bytes cleaned.</returns>
         public async Task<long> CleanupItemsAsync(List<CleanupItem> items, IProgress<string>? progress = null)
         {
             long totalCleaned = 0;
@@ -88,12 +105,23 @@ namespace UltimateMechanic.Services
             return totalCleaned;
         }
 
+        /// <summary>
+        /// Gets the total size of all cleanup items that can be removed asynchronously.
+        /// </summary>
+        /// <returns>The total size in bytes of all cleanup items.</returns>
         public async Task<long> GetTotalCleanupSizeAsync()
         {
             var items = await ScanForCleanupItemsAsync();
             return items.Sum(i => i.SizeBytes);
         }
 
+        /// <summary>
+        /// Scans a directory recursively for cleanup items.
+        /// </summary>
+        /// <param name="items">The list to add found items to.</param>
+        /// <param name="path">The directory path to scan.</param>
+        /// <param name="name">The display name for items found in this directory.</param>
+        /// <param name="category">The cleanup category for found items.</param>
         private void ScanDirectory(List<CleanupItem> items, string path, string name, CleanupCategory category)
         {
             try
@@ -129,6 +157,10 @@ namespace UltimateMechanic.Services
             }
         }
 
+        /// <summary>
+        /// Scans the Recycle Bin for items that can be cleaned.
+        /// </summary>
+        /// <param name="items">The list to add recycle bin items to.</param>
         private void ScanRecycleBin(List<CleanupItem> items)
         {
             try
@@ -156,6 +188,10 @@ namespace UltimateMechanic.Services
             }
         }
 
+        /// <summary>
+        /// Scans browser cache directories for Chrome, Edge, and Firefox.
+        /// </summary>
+        /// <param name="items">The list to add browser cache items to.</param>
         private void ScanBrowserCaches(List<CleanupItem> items)
         {
             var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -193,6 +229,10 @@ namespace UltimateMechanic.Services
             }
         }
 
+        /// <summary>
+        /// Scans the Windows thumbnail cache directory.
+        /// </summary>
+        /// <param name="items">The list to add thumbnail cache items to.</param>
         private void ScanThumbnailCache(List<CleanupItem> items)
         {
             var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -204,6 +244,10 @@ namespace UltimateMechanic.Services
             }
         }
 
+        /// <summary>
+        /// Scans the Windows error reports directory.
+        /// </summary>
+        /// <param name="items">The list to add error report items to.</param>
         private void ScanErrorReports(List<CleanupItem> items)
         {
             var errorReports = @"C:\ProgramData\Microsoft\Windows\WER\ReportQueue";
@@ -213,6 +257,10 @@ namespace UltimateMechanic.Services
             }
         }
 
+        /// <summary>
+        /// Scans the Windows logs directory.
+        /// </summary>
+        /// <param name="items">The list to add Windows log items to.</param>
         private void ScanWindowsLogs(List<CleanupItem> items)
         {
             var logsPath = @"C:\Windows\Logs";
@@ -222,6 +270,11 @@ namespace UltimateMechanic.Services
             }
         }
 
+        /// <summary>
+        /// Calculates the total size of all files in a directory and its subdirectories.
+        /// </summary>
+        /// <param name="path">The directory path to calculate size for.</param>
+        /// <returns>The total size in bytes.</returns>
         private long GetDirectorySize(string path)
         {
             try
