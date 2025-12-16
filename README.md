@@ -32,16 +32,6 @@ Take control of your Windows boot time:
 
 ---
 
-## Screenshots
-
-| **Startup Manager** | **System Cleaner** |
-|:---:|:---:|
-| ![Startup Manager](docs/images/startup_view.png) | ![Cleaner View](docs/images/cleaner_view.png) |
-
-> *Note: Dark Mode is enabled by default for a slick, modern look.*
-
----
-
 ## Tech Stack
 
 * **Framework:** .NET 9.0 (Windows)
