@@ -9,22 +9,22 @@
 
 ---
 
-## ✨ Features
+## Features included:
 
-### 📊 System Dashboard
+### System Dashboard
 Real-time monitoring of your system's vital statistics:
 * **CPU Usage:** Live processor tracking.
 * **Memory Status:** RAM usage visualization.
 * **Storage Health:** Capacity and usage bars for all fixed drives.
 
-### 🧹 Smart Cleaner
+### Smart Cleaner
 Intelligent scanning engine that finds and removes:
 * **Windows Junk:** Temp files, Prefetch, Event Logs, Error Reports.
 * **Browser Caches:** Chrome, Edge, Firefox.
 * **System Cache:** Thumbnail cache, Recycle Bin.
 * *Safety First:* "Scan" before you "Clean" with granular selection.
 
-### 🚀 Startup Manager
+### Startup Manager
 Take control of your Windows boot time:
 * **View All:** Lists programs from both Registry and Startup Folders.
 * **Toggle:** Enable or disable apps with a single click.
@@ -32,7 +32,7 @@ Take control of your Windows boot time:
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 | **Startup Manager** | **System Cleaner** |
 |:---:|:---:|
@@ -42,7 +42,7 @@ Take control of your Windows boot time:
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Framework:** .NET 9.0 (Windows)
 * **UI:** WPF (Windows Presentation Foundation)
@@ -54,7 +54,7 @@ Take control of your Windows boot time:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 * Windows 10 or 11
@@ -74,9 +74,9 @@ Take control of your Windows boot time:
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
-*Built with ❤️ by NeoGhost*
+*Built by Alon Kerem*
